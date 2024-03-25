@@ -1,0 +1,12 @@
+venv/
+cache/
+lib/
+output/
+train/
+_read_cache
+.idea/
+*.log
+
+# Default ignored files
+/shelf/
+/workspace.xml
