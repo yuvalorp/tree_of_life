@@ -4,7 +4,7 @@ import logging
 import os
 import re
 
-from src.data_table_cache import BaseCache, SoupCache, TableDataCache
+from src.data_table_cache import BaseCache, WikiPageCache, TableDataCache
 
 logging.basicConfig(level=100)
 # Specify the directory path

@@ -12,8 +12,8 @@ def get_html(url: str):
     return page.read().decode("utf-8")
 
 
-def get_soup(url: str):
-    return BeautifulSoup(get_html(url), "html.parser")
+def get_soup(html: str):
+    return BeautifulSoup(html, "html.parser")
 
 
 def get_info_table(soup_obj, internal_url: str = ""):
