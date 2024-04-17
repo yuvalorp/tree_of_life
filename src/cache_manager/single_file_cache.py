@@ -1,6 +1,7 @@
 import os
 import pickle
 from abc import abstractmethod
+from copy import deepcopy
 
 from consts import CACHE_DIR
 from src.cache_manager.base_cache import BaseCache, logger
@@ -28,6 +29,9 @@ class SingleFileBaseCache(BaseCache):
             CACHE_DIR,
             self.cache_file_name + ".pkl"
         )
+
+    def post_process(self, result):
+        return deepcopy(result)
 
     def _load(self, cache_name):
         return self._cache_object[cache_name]

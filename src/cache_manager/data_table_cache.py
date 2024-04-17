@@ -38,6 +38,8 @@ class WikiPageCache(MultiFilesBaseCache):
 
 
 class TableDataCache(SingleFileBaseCache):
+    cache_version = 2
+
     def __init__(self):
         super().__init__()
         self._wiki_page_cache = _WikiPageBackCache()
