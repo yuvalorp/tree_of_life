@@ -2,7 +2,7 @@ import logging
 import re
 from typing import Dict, List, Union
 
-from src.data_table_cache import BaseCache
+from src.cache_manager.base_cache import BaseCache
 from src.html_utils import is_url_fit_name
 from src.person import Person
 
@@ -62,7 +62,7 @@ def get_born_year(data_dict, year_born_default):
 
 def get_person_info(table_data_manager: BaseCache, internal_url, year_born_default):
     data_dict: Dict[str, List[Union[str, None]]] = (
-        table_data_manager.get_or_load_resource(internal_url)
+        table_data_manager.get_or_load_resource(internal_url, write_cache=True, read_cache=True)
     )
 
     mother = data_dict.get("Mother", [None, None])
@@ -79,7 +79,7 @@ def get_person_info(table_data_manager: BaseCache, internal_url, year_born_defau
 
 
 def process_person_relative(
-    person, relative, checked, queue, family_graph, relativity=None, time=None
+        person, relative, checked, queue, family_graph, relativity=None, time=None
 ):
     if relative[0] is not None:
         if relativity == "parent":

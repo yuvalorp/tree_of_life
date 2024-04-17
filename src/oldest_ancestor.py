@@ -2,8 +2,9 @@ import logging
 
 import networkx as nx
 
+import src.log_config  # noqa: F401
 from person import Person
-from src.data_table_cache import TableDataCache
+from src.cache_manager.data_table_cache import TableDataCache
 from src.graph_drawer import PyvisDrawer
 from src.set_plus import SetPlus
 from src.utils import get_node_size, get_person_info, process_person_relative
@@ -12,7 +13,6 @@ PEOPLE_COUNT = 4
 YEAR_BORN_DEFAULT = 1000
 
 logger = logging.getLogger(__name__)
-
 
 if __name__ == "__main__":
     table_data_manager = TableDataCache()
@@ -29,7 +29,7 @@ if __name__ == "__main__":
     [family_graph.add_node(m, size=get_node_size(m)) for m in queue.get_list()]
     while not queue.is_empty() and len(checked) < PEOPLE_COUNT:
 
-        # sort the queue by th born year of the child of the person
+        # sort the queue by the born year of the child of the person
         # it is pretty weird but is good enough for my case
         current_man = queue.pop_smallest(lambda x: x.additional_data["time"])
         logger.info(f"pop {current_man.get_name()}, gen: {current_man.additional_data['gen']}")
@@ -42,6 +42,8 @@ if __name__ == "__main__":
             process_person_relative(current_man, mother, checked, queue, family_graph, relativity="parent", time=born)
 
         checked.add(current_man)
+
+    table_data_manager.save_cache()
 
     drawer = PyvisDrawer()
     graph = drawer.create_graph_obj(family_graph, default_time=YEAR_BORN_DEFAULT)
