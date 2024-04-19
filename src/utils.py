@@ -34,11 +34,12 @@ def process_parents_key(parents):
         if is_url_fit_name(parents_names[0], parents[1][0]):
             father = [parents_names[0], parents[1][0]]
             mother = [parents_names[1], None]
-        elif is_url_fit_name(parents_names[0], parents[1][0]):
+        elif is_url_fit_name(parents_names[1], parents[1][0]):
             father = [parents_names[0], None]
             mother = [parents_names[1], parents[1][0]]
         else:
-            logger.error(f"coudn't find parents in {parents}")
+            father = [parents_names[0], None]
+            mother = [parents_names[1], None]
     else:
         logger.error(f"coudn't find parents in {parents}")
 
