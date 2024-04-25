@@ -5,7 +5,7 @@ import networkx as nx
 import src.log_config  # noqa: F401
 from person import Person
 from src.cache_manager.data_table_cache import TableDataCache
-from src.graph_analyzing import find_generation
+from src.graph_analyzing import find_generation, min_ancestors_knowledge_level
 from src.graph_drawer import CosmographDrawer
 from src.set_plus import SetPlus
 from src.utils import get_node_size, get_person_info
@@ -18,6 +18,11 @@ logger = logging.getLogger(__name__)
 
 def get_node_time(x):
     return f"1 May {x.additional_data.get('time', YEAR_BORN_DEFAULT)}"
+
+
+def get_node_color(x):
+    nodes_color_palette = ("#B6F3E9", "#FEEEFB", "#F3D6DA", "#D2C2DE", "#58909D", "#104547", "#252323")
+    return nodes_color_palette[x.additional_data.get("ancestors_knowledge_level", 0)]
 
 
 def process_person_relative(
@@ -78,9 +83,12 @@ if __name__ == "__main__":
 
     table_data_manager.save_cache()
 
+    min_ancestors_knowledge_level(family_graph)
     find_generation(family_graph)
+
     drawer = CosmographDrawer()
     graph = drawer.create_graph_obj(family_graph,
                                     get_node_size=get_node_size,
-                                    get_node_time=get_node_time)
+                                    get_node_time=get_node_time,
+                                    get_node_color=get_node_color)
     drawer.draw_graph(graph)

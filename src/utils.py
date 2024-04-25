@@ -10,7 +10,7 @@ logger = logging.getLogger(__name__)
 
 
 def get_node_size(person: Person):
-    return max(50 / (0.05 * person.additional_data["gen"] ** 2 + 1), 2)
+    return max(50 / (0.1 * person.additional_data["gen"] ** 2 + 1), 1)
 
 
 def process_parents_key(parents):
