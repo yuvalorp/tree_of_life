@@ -77,27 +77,3 @@ def get_person_info(table_data_manager: BaseCache, internal_url, year_born_defau
         father[1] = father[1][0] if father[1] is not None else father[1]
 
     return mother, father, get_born_year(data_dict, year_born_default)
-
-
-def process_person_relative(
-        person, relative, checked, queue, family_graph, relativity=None, time=None
-):
-    if relative[0] is not None:
-        if relativity == "parent":
-            relative = Person(
-                relative[0],
-                relative[1],
-                {"time": time, "gen": person.additional_data["gen"] + 1},
-            )
-        else:
-            relative = Person(
-                relative[0],
-                relative[1],
-                {"time": time, "gen": person.additional_data["gen"]},
-            )
-
-        # if we will not have the birth year of the man we will use the birth year of his relative
-        family_graph.add_node(relative, size=get_node_size(relative), time=time)
-        family_graph.add_edge(person, relative)
-        if relative not in checked and relative not in queue:
-            queue.add(relative)
