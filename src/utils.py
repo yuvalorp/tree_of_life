@@ -40,25 +40,29 @@ def process_parents_key(parents):
         else:
             father = [parents_names[0], None]
             mother = [parents_names[1], None]
+    elif len(parents_names) == 1 and len(parents[1]) == 2:
+        # probably the program couldn't separate the names
+        logger.error(f"couldn't separate parents names in {parents}")
+        father = [parents[1][0][6:].replace("_", " "), parents[1][0]]
+        mother = [parents[1][1][6:].replace("_", " "), parents[1][1]]
     else:
         logger.error(f"coudn't find parents in {parents}")
 
     return father, mother
 
 
-def get_born_year(data_dict, year_born_default):
-    born = data_dict.get("Born", year_born_default)
-    if isinstance(born, list):
+def get_year_from_key(data_dict, key):
+    year = data_dict.get(key)
+    if isinstance(year, list):
         pattern = "[0-9]{3,4}"
-        match_results = re.search(pattern, born[0], re.IGNORECASE)
+        match_results = re.search(pattern, year[0], re.IGNORECASE)
         if match_results is None:
-            logger.error(f"coudn't find year in {born[0]}")
-            born = year_born_default
+            logger.error(f"coudn't find year in {year[0]}")
         else:
-            born = int(match_results.group())
+            year = int(match_results.group())
+        return year
     else:
-        logger.error(f"coudn't find born date in {data_dict}")
-    return born
+        logger.error(f"coudn't find {key.lower()} date in {data_dict}")
 
 
 def get_person_info(table_data_manager: BaseCache, internal_url, year_born_default):
@@ -75,5 +79,11 @@ def get_person_info(table_data_manager: BaseCache, internal_url, year_born_defau
     else:
         mother[1] = mother[1][0] if mother[1] is not None else mother[1]
         father[1] = father[1][0] if father[1] is not None else father[1]
+    born_year= get_year_from_key(data_dict, "Born")
 
-    return mother, father, get_born_year(data_dict, year_born_default)
+    if born_year is None:
+        # if the child is born for cristian family he will baptise soon after his birth
+        born_year = get_year_from_key(data_dict, "Baptised")
+        if born_year is None:
+            born_year = year_born_default
+    return mother, father, born_year

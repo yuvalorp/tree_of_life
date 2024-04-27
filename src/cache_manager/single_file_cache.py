@@ -12,11 +12,11 @@ class SingleFileBaseCache(BaseCache):
     def __init__(self):
         super().__init__()
         with open(self._get_cache_path(), "rb") as f:
-            logger.info(f"loading cache file for class {self._class_name}")
+            logger.debug(f"loading cache file for class {self._class_name}")
             self._cache_object = pickle.load(f)
 
     def save_cache(self):
-        logger.info(f"saving cache file for class {self._class_name}")
+        logger.debug(f"saving cache file for class {self._class_name}")
         with open(self._get_cache_path(), "wb") as f:
             pickle.dump(self._cache_object, f)
 

@@ -34,7 +34,7 @@ class BaseCache(ABC):
         if read_cache:
             if cache_exist:
                 cache = self._load(resource_name)
-                logger.debug(f"{self._class_name} loading cache for {resource_name}")
+                logger.info(f"{self._class_name} loading cache for {resource_name}")
                 is_cache_updated = _is_cache_updated(cache)
                 if is_cache_updated:
                     result = cache["object"]

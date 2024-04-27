@@ -25,6 +25,16 @@ def get_node_color(x):
     return nodes_color_palette[x.additional_data.get("ancestors_knowledge_level", 0)]
 
 
+def add_people(people_urls, queue):
+    if isinstance(people_urls, str):
+        person_name = people_urls.replace("_", " ")
+        queue.add(Person(person_name, "/wiki/"+people_urls))
+    elif isinstance(people_urls, list):
+        for url in people_urls:
+            person_name = url.replace("_", " ")
+            queue.add(Person(person_name, "/wiki/"+url))
+
+
 def process_person_relative(
         person, relative, checked, queue, family_graph, relativity=None, time=None
 ):
@@ -58,21 +68,20 @@ def process_person_relative(
 
 
 if __name__ == "__main__":
-    table_data_manager = TableDataCache()
+    table_data_cache = TableDataCache()
     checked = SetPlus()
     queue = SetPlus([])
 
-    queue.add(Person("Prince George of Wales",
-                     "/wiki/Prince_George_of_Wales", {"time": 2020}))
-    queue.add(Person("Prince Richard, Duke of Gloucester",
-                     "/wiki/Prince_Richard,_Duke_of_Gloucester", {"time": 1950}))
+    add_people(["Prince_George_of_Wales",
+                "Prince_Archie_of_Sussex"],
+               queue)
 
     family_graph = nx.DiGraph()  # checked+queue
     [family_graph.add_node(m) for m in queue.get_list()]
     while not queue.is_empty() and len(checked) < PEOPLE_COUNT:
         current_man = queue.pop(0)
         if current_man.get_wiki_url() is not None:
-            mother, father, born = get_person_info(table_data_manager, current_man.get_wiki_url(), YEAR_BORN_DEFAULT)
+            mother, father, born = get_person_info(table_data_cache, current_man.get_wiki_url(), YEAR_BORN_DEFAULT)
             logger.debug(f"{current_man.get_name()}, father: {father}, mother: {mother}")
             current_man.additional_data["time"] = born
 
@@ -81,7 +90,7 @@ if __name__ == "__main__":
 
         checked.add(current_man)
 
-    table_data_manager.save_cache()
+    table_data_cache.save_cache()
 
     min_ancestors_knowledge_level(family_graph)
     find_generation(family_graph)
