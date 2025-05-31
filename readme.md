@@ -11,7 +11,7 @@ the output graph can be presented in two options:
 
 manual data source - option for adding manually people that dont have a wiki page for example your own family!
 or your for favorite TV show! for example this is the family tree of avatar visualized with pyvis:
-![avatar.png](images%2Fexample_output.png)
+![avatar.png](images%2Favatar.png)
 
 the program also includes two layers of cache to minimize http spamming:
 
