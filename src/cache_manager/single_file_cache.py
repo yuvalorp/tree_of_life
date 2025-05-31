@@ -31,6 +31,8 @@ class SingleFileBaseCache(BaseCache):
         )
 
     def post_process(self, result):
+        if result is None:
+            return {}
         return deepcopy(result)
 
     def _load(self, cache_name):

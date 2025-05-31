@@ -2,7 +2,7 @@ import logging
 import re
 from typing import Dict, List, Union
 
-from src.cache_manager.base_cache import BaseCache
+from src.cache_manager.base_data_source import BaseDataSource
 from src.html_utils import is_url_fit_name
 from src.person import Person
 
@@ -53,6 +53,8 @@ def process_parents_key(parents):
 
 def get_year_from_key(data_dict, key):
     year = data_dict.get(key)
+    if type(year) == int:
+        return year
     if isinstance(year, list):
         pattern = "[0-9]{3,4}"
         match_results = re.search(pattern, year[0], re.IGNORECASE)
@@ -65,11 +67,10 @@ def get_year_from_key(data_dict, key):
         logger.error(f"coudn't find {key.lower()} date in {data_dict}")
 
 
-def get_person_info(table_data_manager: BaseCache, internal_url, year_born_default):
+def get_person_info(data_cache: BaseDataSource, person: Person, year_born_default):
     data_dict: Dict[str, List[Union[str, None]]] = (
-        table_data_manager.get_or_load_resource(internal_url, write_cache=True, read_cache=True)
+        data_cache.get_or_load_resource(person, write_cache=True, read_cache=True)
     )
-
     mother = data_dict.get("Mother", [None, None])
     father = data_dict.get("Father", [None, None])
     if father[0] is None and mother[0] is None:
@@ -79,7 +80,7 @@ def get_person_info(table_data_manager: BaseCache, internal_url, year_born_defau
     else:
         mother[1] = mother[1][0] if mother[1] is not None else mother[1]
         father[1] = father[1][0] if father[1] is not None else father[1]
-    born_year= get_year_from_key(data_dict, "Born")
+    born_year = get_year_from_key(data_dict, "Born")
 
     if born_year is None:
         # if the child is born for cristian family he will baptise soon after his birth

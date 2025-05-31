@@ -28,7 +28,7 @@ def _find_generation_connected_component(graph, component):
                 neighbor_data["gen"] = current_data["gen"] + 1
             # else:
             #     neighbor_data["generation"] = min(current_node["generation"] + 1, neighbor_data["generation"])
-        for neighbor in reverse_graph.neighbors(current_node):
+        for neighbor in graph.predecessors(current_node):
             neighbor_data = neighbor.additional_data
             gen = neighbor_data.get("gen")
             if gen is None:

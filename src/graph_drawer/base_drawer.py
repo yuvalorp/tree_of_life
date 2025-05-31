@@ -17,3 +17,7 @@ class BaseDrawer(ABC):
     @abstractmethod
     def draw_graph(self, graph, file_path):
         pass
+
+    def is_construction_node(self,n):
+        node_name=str(n)
+        return "Futher" in node_name or "Grendfather" in node_name

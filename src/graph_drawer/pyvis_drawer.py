@@ -41,7 +41,10 @@ class PyvisDrawer(BaseDrawer):
         edges = [[str(e[0]), str(e[1]), e[2]] for e in edges]
 
         for n, n_data in nodes_data:
-            nt_graph.add_node(str(n), size=get_node_size(n), **n_data)
+            if not self.is_construction_node(n):
+                nt_graph.add_node(str(n), size=get_node_size(n), **n_data)
+            else:
+                nt_graph.add_node(str(n), size=0, **n_data)
         if len(edges) > 0:
             for e in edges:
                 # if user does not pass a 'weight' argument

@@ -5,12 +5,13 @@ import networkx as nx
 import src.log_config  # noqa: F401
 from person import Person
 from src.cache_manager.data_table_cache import TableDataCache
+from src.cache_manager.manual_data_source import ManualDataSource
 from src.graph_analyzing import find_generation, min_ancestors_knowledge_level
-from src.graph_drawer import CosmographDrawer
+from src.graph_drawer import CosmographDrawer, PyvisDrawer
 from src.set_plus import SetPlus
 from src.utils import get_node_size, get_person_info
 
-PEOPLE_COUNT = 4
+PEOPLE_COUNT = 30
 YEAR_BORN_DEFAULT = 1000
 
 logger = logging.getLogger(__name__)
@@ -28,11 +29,11 @@ def get_node_color(x):
 def add_people(people_urls, queue):
     if isinstance(people_urls, str):
         person_name = people_urls.replace("_", " ")
-        queue.add(Person(person_name, "/wiki/"+people_urls))
+        queue.add(Person(person_name, "/wiki/" + people_urls))
     elif isinstance(people_urls, list):
         for url in people_urls:
             person_name = url.replace("_", " ")
-            queue.add(Person(person_name, "/wiki/"+url))
+            queue.add(Person(person_name, "/wiki/" + url))
 
 
 def process_person_relative(
@@ -68,7 +69,8 @@ def process_person_relative(
 
 
 if __name__ == "__main__":
-    table_data_cache = TableDataCache()
+    # table_data_cache = ManualDataSource("my_family")
+    data_source = TableDataCache()
     checked = SetPlus()
     queue = SetPlus([])
 
@@ -80,17 +82,17 @@ if __name__ == "__main__":
     [family_graph.add_node(m) for m in queue.get_list()]
     while not queue.is_empty() and len(checked) < PEOPLE_COUNT:
         current_man = queue.pop(0)
-        if current_man.get_wiki_url() is not None:
-            mother, father, born = get_person_info(table_data_cache, current_man.get_wiki_url(), YEAR_BORN_DEFAULT)
-            logger.debug(f"{current_man.get_name()}, father: {father}, mother: {mother}")
-            current_man.additional_data["time"] = born
 
-            process_person_relative(current_man, father, checked, queue, family_graph, relativity="parent", time=born)
-            process_person_relative(current_man, mother, checked, queue, family_graph, relativity="parent", time=born)
+        mother, father, born = get_person_info(data_source, current_man, YEAR_BORN_DEFAULT)
+        logger.debug(f"{current_man.get_name()}, father: {father}, mother: {mother}")
+        current_man.additional_data["time"] = born
+
+        process_person_relative(current_man, father, checked, queue, family_graph, relativity="parent", time=born)
+        process_person_relative(current_man, mother, checked, queue, family_graph, relativity="parent", time=born)
 
         checked.add(current_man)
 
-    table_data_cache.save_cache()
+    data_source.save_cache()
 
     min_ancestors_knowledge_level(family_graph)
     find_generation(family_graph)
